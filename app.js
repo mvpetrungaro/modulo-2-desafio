@@ -6,6 +6,9 @@ const express         =     require('express')
   , config            =     require('./configuration/config')
   , app               =     express();
 
+//Required for testing over http (non-https). Only for development purposes.
+require('https').globalAgent.options.rejectUnauthorized = false;
+
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 passport.use(new GoogleStrategy({
