@@ -3,22 +3,34 @@ const express         =     require('express')
   , cookieParser      =     require('cookie-parser')
   , session           =     require('express-session')
   , bodyParser        =     require('body-parser')
-  , config            =     require('./configuration/config')
+  , googleConfig      =     require('./configuration/myGoogleConfig')
+  , facebookConfig    =     require('./configuration/myFacebookConfig')
   , app               =     express();
 
 //Required for testing over http (non-https). Only for development purposes.
 require('https').globalAgent.options.rejectUnauthorized = false;
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 
 passport.use(new GoogleStrategy({
-    clientID: config.api_key,
-    clientSecret: config.api_secret,
-    callbackURL: config.callback_url
+    clientID: googleConfig.api_key,
+    clientSecret: googleConfig.api_secret,
+    callbackURL: googleConfig.callback_url
   },
   function(accessToken, refreshToken, profile, done) {
     return done(null, profile);
   }
+));
+
+passport.use(new FacebookStrategy({
+  clientID: facebookConfig.api_key,
+  clientSecret: facebookConfig.api_secret,
+  callbackURL: facebookConfig.callback_url
+},
+function(accessToken, refreshToken, profile, done) {
+  return done(null, profile);
+}
 ));
 
 // Passport session setup.
@@ -47,6 +59,15 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }))
 
 app.get('/auth/google/callback', 
   passport.authenticate('google',  { successRedirect : '/', failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  }
+);
+
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['profile'] }));
+
+app.get('/auth/facebook/callback', 
+  passport.authenticate('facebook',  { successRedirect : '/', failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
   }
