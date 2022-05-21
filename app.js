@@ -8,7 +8,7 @@ const express         =     require('express')
   , app               =     express();
 
 //Required for testing over http (non-https). Only for development purposes.
-require('https').globalAgent.options.rejectUnauthorized = false;
+//require('https').globalAgent.options.rejectUnauthorized = false;
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
@@ -64,7 +64,7 @@ app.get('/auth/google/callback',
   }
 );
 
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['profile'] }));
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
 app.get('/auth/facebook/callback', 
   passport.authenticate('facebook',  { successRedirect : '/', failureRedirect: '/login' }),
